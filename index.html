@@ -183,120 +183,141 @@
         </div>
     </main>
 
- <script>
-        const API_KEYS = {
-            GEMINI: 'AIzaSyCdFS1o2zsyiGJ65BAuqX1HBfnVf6uuMms',
-            UNSPLASH: 'vRFxZ8hfjmOAfWKGcCE33ooXCcWmLVAF9P0GZ5phuvI'
-        };
-
-        let savedItems = JSON.parse(localStorage.getItem('savedItems')) || [];
-
-        async function search() {
-            const searchType = document.getElementById('searchType').value;
-            const query = document.getElementById('searchInput').value;
-            
-            if (!query.trim()) return;
-
-            document.getElementById('loader').classList.remove('hidden');
-            document.getElementById('results').innerHTML = '';
-
-            try {
-                switch(searchType) {
-                    case 'images':
-                        await searchImages(query);
-                        break;
-                    case 'captions':
-                        await generateCaptions(query);
-                        break;
-                    case 'ideas':
-                        await generateIdeas(query);
-                        break;
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            } finally {
-                document.getElementById('loader').classList.add('hidden');
-            }
-        }
-
-        async function searchImages(query) {
-            const response = await fetch(`https://api.unsplash.com/photos/random?query=${query}&count=9&client_id=${API_KEYS.UNSPLASH}`);
-            const images = await response.json();
-            
-            const resultsDiv = document.getElementById('results');
-            images.forEach(image => {
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-lg shadow-lg overflow-hidden';
-                card.innerHTML = `
-                    <img src="${image.urls.regular}" alt="${image.alt_description}" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <div class="flex justify-between items-center">
-                            <a href="${image.links.html}" target="_blank" class="text-sm text-gray-600">View on Unsplash</a>
-                            <button onclick="saveItem('image', '${image.urls.regular}')" class="text-[#FF6F61] hover:text-[#e5645a]">
-                                <i class="bi bi-bookmark-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                resultsDiv.appendChild(card);
-            });
-        }
-
-        async function generateCaptions(theme) {
-            const response = await fetch('/generate-captions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+  <script>
+        function app() {
+            return {
+                searchType: 'images',
+                searchQuery: '',
+                results: [],
+                savedItems: [],
+                showLibrary: false,
+                isLoading: false,
+                notification: {
+                    show: false,
+                    message: ''
                 },
-                body: `theme=${theme}`
-            });
-            const data = await response.json();
-            
-            const resultsDiv = document.getElementById('results');
-            data.captions.forEach(caption => {
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-lg shadow-lg p-4';
-                card.innerHTML = `
-                    <p class="text-gray-800">${caption}</p>
-                    <button onclick="saveItem('caption', '${caption}')" class="mt-2 text-[#FF6F61] hover:text-[#e5645a]">
-                        <i class="bi bi-bookmark-plus"></i> Save
-                    </button>
-                `;
-                resultsDiv.appendChild(card);
-            });
-        }
 
-        async function generateIdeas(theme) {
-            const response = await fetch('/generate-ideas', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
+                init() {
+                    this.savedItems = JSON.parse(localStorage.getItem('savedItems') || '[]');
                 },
-                body: `theme=${theme}`
-            });
-            const data = await response.json();
-            
-            const resultsDiv = document.getElementById('results');
-            data.ideas.forEach(idea => {
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-lg shadow-lg p-4';
-                card.innerHTML = `
-                    <p class="text-gray-800">${idea}</p>
-                    <button onclick="saveItem('idea', '${idea}')" class="mt-2 text-[#FF6F61] hover:text-[#e5645a]">
-                        <i class="bi bi-bookmark-plus"></i> Save
-                    </button>
-                `;
-                resultsDiv.appendChild(card);
-            });
-        }
 
-        function saveItem(type, content) {
+                getPlaceholder() {
+                    switch (this.searchType) {
+                        case 'images': return 'Enter keywords to find images...';
+                        case 'captions': return 'Describe your content for caption ideas...';
+                        case 'ideas': return 'Enter a topic for content ideas...';
+                        default: return 'Enter your search...';
+                    }
+                },
+
+                async performSearch() {
+                    if (!this.searchQuery.trim()) return;
+                    
+                    this.isLoading = true;
+                    this.results = [];
+
+                    try {
+                        switch (this.searchType) {
+                            case 'images':
+                                await this.searchImages();
+                                break;
+                            case 'captions':
+                                await this.generateCaptions();
+                                break;
+                            case 'ideas':
+                                await this.generateIdeas();
+                                break;
+                        }
+                    } catch (error) {
+                        this.showNotification('An error occurred. Please try again.');
+                        console.error('Search error:', error);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+
+                async searchImages() {
+                    const response = await fetch(
+                        `https://api.unsplash.com/photos/random?query=${encodeURIComponent(this.searchQuery)}&count=9&client_id=vRFxZ8hfjmOAfWKGcCE33ooXCcWmLVAF9P0GZ5phuvI`
+                    );
+                    const data = await response.json();
+                    this.results = data.map(image => ({
+                        type: 'image',
+                        url: image.urls.regular,
+                        alt: image.alt_description,
+                        attribution: image.user.name
+                    }));
+                },
+
+                async generateCaptions() {
+                    const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer Wz7vsrSK8uQfJlEHYlcFvUi6R2I3',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            messages: [{
+                                role: 'user',
+                                content: [{ 
+                                    type: 'text',
+                                    text: `Generate 5 creative social media captions for: ${this.searchQuery}`
+                                }]
+                            }]
+                        })
+                    });
+                    const data = await response.json();
+                    this.results = data.message.split('\n')
+                        .filter(caption => caption.trim())
+                        .map(caption => ({
+                            type: 'caption',
+                            content: caption
+                        }));
+                },
+
+                async generateIdeas() {
+                    const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': 'Bearer Wz7vsrSK8uQfJlEHYlcFvUi6R2I3',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            messages: [{
+                                role: 'user',
+                                content: [{ 
+                                    type: 'text',
+                                    text: `Generate 5 creative content ideas about: ${this.searchQuery}`
+                                }]
+                            }]
+                        })
+                    });
+                    const data = await response.json();
+                    this.results = data.message.split('\n')
+                        .filter(idea => idea.trim())
+                        .map(idea => ({
+                            type: 'idea',
+                            content: idea
+                        }));
+                },
+
+                async copyToClipboard(text) {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        this.showNotification('Copied to clipboard!');
+                    } catch (error) {
+                        this.showNotification('Failed to copy to clipboard');
+                    }
+                },
+
+                
+         saveItem(type, content) {
             savedItems.push({ type, content, timestamp: Date.now() });
             localStorage.setItem('savedItems', JSON.stringify(savedItems));
             updateLibrary();
         }
 
-        function updateLibrary() {
+        updateLibrary() {
             const libraryContent = document.getElementById('libraryContent');
             libraryContent.innerHTML = '';
             
@@ -324,21 +345,21 @@
             });
         }
 
-        function removeItem(index) {
-            savedItems.splice(index, 1);
-            localStorage.setItem('savedItems', JSON.stringify(savedItems));
-            updateLibrary();
-        }
+                removeItem(index) {
+                    this.savedItems.splice(index, 1);
+                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
+                    this.showNotification('Item removed from library');
+                },
 
-        function toggleLibrary() {
-            const modal = document.getElementById('libraryModal');
-            modal.classList.toggle('hidden');
-            if (!modal.classList.contains('hidden')) {
-                updateLibrary();
+                showNotification(message) {
+                    this.notification.message = message;
+                    this.notification.show = true;
+                    setTimeout(() => {
+                        this.notification.show = false;
+                    }, 3000);
+                }
             }
         }
-
-        document.getElementById('libraryBtn').addEventListener('click', toggleLibrary);
     </script>
 </body>
 </html>
