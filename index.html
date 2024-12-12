@@ -16,12 +16,12 @@
             color: #2D2D2D;
         }
 
-        .heading {d
+        .heading {
             font-family: 'Poppins', sans-serif;
             color: #6A0DAD;
         }
 
-        .btn-primary { 
+        .btn-primary {
             background-color: #6A0DAD;
             color: #FFFFFF;
         }
@@ -131,11 +131,11 @@
                         <p x-show="searchType !== 'images'" x-text="result.content" class="text-gray-700"></p>
                         <div class="flex justify-between items-center mt-4">
                             <button @click="copyToClipboard(searchType === 'images' ? result.url : result.content)"
-                                class="text-[#FF6F61] hover:text-[#E5645A]" aria-label="Copy to clipboard">
+                                class="text-[#6A0DAD] hover:text-[#2d2d2d]" aria-label="Copy to clipboard">
                                 <i class="bi bi-clipboard"></i>
                             </button>
                             <button @click="saveItem(result)"
-                                class="text-[#FF6F61] hover:text-[#E5645A]" aria-label="Save item">
+                                class="text-[#FF6F61] hover:text-[#e5645a]" aria-label="Save item">
                                 <i class="bi bi-bookmark-plus"></i>
                             </button>
                         </div>
@@ -183,7 +183,7 @@
         </div>
     </main>
 
-  <script>
+     <script>
         function app() {
             return {
                 searchType: 'images',
@@ -310,11 +310,11 @@
                     }
                 },
 
-                
-         saveItem(type, content) {
-            savedItems.push({ type, content, timestamp: Date.now() });
-            localStorage.setItem('savedItems', JSON.stringify(savedItems));
-        }
+                saveItem(item) {
+                    this.savedItems.push(item);
+                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
+                    this.showNotification('Item saved to library!');
+                },
 
                 removeItem(index) {
                     this.savedItems.splice(index, 1);
