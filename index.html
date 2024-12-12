@@ -184,6 +184,35 @@
     </main>
 
      <script>
+         let savedItems = JSON.parse(localStorage.getItem('savedItems')) || [];
+
+         async function search() {
+            const searchType = document.getElementById('searchType').value;
+            const query = document.getElementById('searchInput').value;
+            
+            if (!query.trim()) return;
+
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('results').innerHTML = '';
+
+            try {
+                switch(searchType) {
+                    case 'images':
+                        await searchImages(query);
+                        break;
+                    case 'captions':
+                        await generateCaptions(query);
+                        break;
+                    case 'ideas':
+                        await generateIdeas(query);
+                        break;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                document.getElementById('loader').classList.add('hidden');
+            }
+        }
         function app() {
             return {
                 searchType: 'images',
