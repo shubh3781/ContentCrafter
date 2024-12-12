@@ -183,15 +183,22 @@
         </div>
     </main>
 
-    <script>
+   <script>
         function app() {
             return {
-                searchType: 'images',
-                searchQuery: '',
-                results: [],
-                savedItems: [],
                 showLibrary: false,
-                isLoading: false,
+                imageQuery: '',
+                captionTheme: '',
+                ideaTheme: '',
+                imageUrl: '',
+                captions: [],
+                ideas: [],
+                savedItems: [],
+                isLoading: {
+                    image: false,
+                    captions: false,
+                    ideas: false
+                },
                 notification: {
                     show: false,
                     message: ''
@@ -201,106 +208,88 @@
                     this.savedItems = JSON.parse(localStorage.getItem('savedItems') || '[]');
                 },
 
-                async performSearch() {
-                    if (!this.searchQuery.trim()) return;
-
-                    this.isLoading = true;
-                    this.results = [];
-
+                async fetchImage() {
+                    if (!this.imageQuery.trim()) return;
+                    this.isLoading.image = true;
                     try {
-                        switch (this.searchType) {
-                            case 'images':
-                                await this.searchImages();
-                                break;
-                            case 'captions':
-                                await this.generateCaptions();
-                                break;
-                            case 'ideas':
-                                await this.generateIdeas();
-                                break;
-                        }
+                        const response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(this.imageQuery)}&client_id=vRFxZ8hfjmOAfWKGcCE33ooXCcWmLVAF9P0GZ5phuvI`);
+                        const data = await response.json();
+                        this.imageUrl = data.urls.regular;
                     } catch (error) {
-                        this.showNotification('An error occurred. Please try again.');
-                        console.error('Search error:', error);
+                        this.showNotification('Error fetching image. Please try again.');
                     } finally {
-                        this.isLoading = false;
+                        this.isLoading.image = false;
                     }
-                },
-
-                async searchImages() {
-                    const response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(this.searchQuery)}&count=9&client_id=vRFxZ8hfjmOAfWKGcCE33ooXCcWmLVAF9P0GZ5phuvI`);
-                    const data = await response.json();
-                    this.results = data.map(image => ({
-                        type: 'image',
-                        url: image.urls.regular,
-                        alt: image.alt_description,
-                        attribution: image.user.name
-                    }));
                 },
 
                 async generateCaptions() {
-                    const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer Wz7vsrSK8uQfJlEHYlcFvUi6R2I3',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            messages: [{
-                                role: 'user',
-                                content: [{
-                                    type: 'text',
-                                    text: `Generate 5 creative social media captions for: ${this.searchQuery}`
+                    if (!this.captionTheme.trim()) return;
+                    this.isLoading.captions = true;
+                    try {
+                        const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer Wz7vsrSK8uQfJlEHYlcFvUi6R2I3',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                messages: [{
+                                    role: 'user',
+                                    content: [{
+                                        type: 'text',
+                                        text: `Generate 5 engaging social media captions for: ${this.captionTheme}`
+                                    }]
                                 }]
-                            }]
-                        })
-                    });
-                    const data = await response.json();
-                    this.results = data.message.split('\n')
-                        .filter(caption => caption.trim())
-                        .map(caption => ({
-                            type: 'caption',
-                            content: caption
-                        }));
+                            })
+                        });
+                        const data = await response.json();
+                        this.captions = data.message.split('\n').filter(caption => caption.trim());
+                    } catch (error) {
+                        this.showNotification('Error generating captions. Please try again.');
+                    } finally {
+                        this.isLoading.captions = false;
+                    }
                 },
 
                 async generateIdeas() {
-                    const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': 'Bearer Wz7vsrSK8uQfJlEHYlcFvUi6R2I3',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            messages: [{
-                                role: 'user',
-                                content: [{
-                                    type: 'text',
-                                    text: `Generate 5 creative content ideas for: ${this.searchQuery}`
+                    if (!this.ideaTheme.trim()) return;
+                    this.isLoading.ideas = true;
+                    try {
+                        const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': 'Bearer Wz7vsrSK8uQfJlEHYlcFvUi6R2I3',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                messages: [{
+                                    role: 'user',
+                                    content: [{
+                                        type: 'text',
+                                        text: `Generate 5 creative content ideas for: ${this.ideaTheme}`
+                                    }]
                                 }]
-                            }]
-                        })
-                    });
-                    const data = await response.json();
-                    this.results = data.message.split('\n')
-                        .filter(idea => idea.trim())
-                        .map(idea => ({
-                            type: 'idea',
-                            content: idea
-                        }));
+                            })
+                        });
+                        const data = await response.json();
+                        this.ideas = data.message.split('\n').filter(idea => idea.trim());
+                    } catch (error) {
+                        this.showNotification('Error generating ideas. Please try again.');
+                    } finally {
+                        this.isLoading.ideas = false;
+                    }
                 },
 
-                getPlaceholder() {
-                    switch (this.searchType) {
-                        case 'images':
-                            return 'Enter keywords to find images...';
-                        case 'captions':
-                            return 'Describe your content for caption ideas...';
-                        case 'ideas':
-                            return 'Enter a topic for content ideas...';
-                        default:
-                            return 'Enter your search...';
-                    }
+                saveItem(type, content) {
+                    this.savedItems.push({ type, content });
+                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
+                    this.showNotification('Item saved to library!');
+                },
+
+                removeItem(index) {
+                    this.savedItems.splice(index, 1);
+                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
+                    this.showNotification('Item removed from library');
                 },
 
                 async copyToClipboard(text) {
@@ -312,16 +301,8 @@
                     }
                 },
 
-                saveItem(item) {
-                    this.savedItems.push(item);
-                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
-                    this.showNotification('Item saved to library!');
-                },
-
-                removeItem(index) {
-                    this.savedItems.splice(index, 1);
-                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
-                    this.showNotification('Item removed from library');
+                toggleLibrary() {
+                    this.showLibrary = !this.showLibrary;
                 },
 
                 showNotification(message) {
@@ -335,5 +316,4 @@
         }
     </script>
 </body>
-
 </html>
