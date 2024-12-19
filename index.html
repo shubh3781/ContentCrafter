@@ -3,164 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ContentCrafter AI - Your Creative Assistant</title>
+    <title>ContentCrafter - Your Creative AI Assistant</title>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6a0dad;
-            --secondary: #2d2d2d;
-        }
         body {
-            font-family: 'Space Grotesk', sans-serif;
-            background-color: #fcfcfc;
+            font-family: 'Roboto', sans-serif;
+            background-color: #1E1E2E;
+            color: #E0E0E0;
         }
-        .neub-border {
-            border: 3px solid var(--secondary);
-            box-shadow: 5px 5px 0px var(--secondary);
+        .neu-box {
+            background: linear-gradient(145deg, #23233A, #1C1C2C);
+            border: 1px solid #3D3D5C;
+            box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.6);
+            color: #E0E0E0;
+        }
+        .neu-button {
+            background: linear-gradient(145deg, #2A2A3F, #1E1E2E);
+            border: 1px solid #5C5C7A;
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.5);
             transition: all 0.2s ease;
+            color: #FFFFFF;
         }
-        .neub-border:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 3px 3px 0px var(--secondary);
+        .neu-button:hover {
+            transform: translate(1px, 1px);
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.7);
+            background: #5C5C7A;
         }
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-            border: 3px solid var(--secondary);
+        .neu-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
-        .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: var(--primary) #ffffff;
+        .header-title {
+            background: linear-gradient(to right, #9A6AFF, #6E41D9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+        h1, h2, p {
+            color: #E0E0E0;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #ffffff;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: var(--primary);
-            border-radius: 4px;
+        a:hover {
+            color: #BDAAFF;
         }
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body x-data="contentCrafter()" x-init="init()" class="min-h-screen">
-    <!-- Notification -->
+<body x-data="app()" x-init="init()">
+    <!-- Notification Toast -->
     <div x-show="notification.show" x-cloak
-         class="fixed bottom-4 right-4 bg-white neub-border p-4 z-50 max-w-sm">
-        <p x-text="notification.message" class="text-secondary"></p>
+        class="fixed bottom-4 right-4 neu-box p-4 z-50 rounded-lg">
+        <p x-text="notification.message"></p>
     </div>
 
     <!-- Header -->
-    <header class="bg-white border-b-3 border-secondary">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <header class="bg-[#23233A] border-b border-[#3D3D5C]">
+        <div class="max-w-7xl mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <div class="flex items-center gap-3">
-                    <img src="https://firebasestorage.googleapis.com/v0/b/widecanvas-d0dd4.appspot.com/o/logos%2Flogo.webp?alt=media&token=8b45193f-5cb6-4375-ba9a-c51b4480cb33" 
-                         alt="Logo" 
-                         class="h-10 w-auto neub-border p-1">
-                    <h1 class="text-2xl font-bold">Content<span class="text-primary">Crafter</span></h1>
-                </div>
-                <button @click="showLibrary = true" class="neub-border bg-white px-4 py-2 hover:bg-gray-50">
+                <h1 class="text-2xl font-bold header-title">ContentCrafter</h1>
+                <button @click="showLibrary = true" class="neu-button px-4 py-2 rounded-lg">
                     <i class="bi bi-collection me-2"></i>My Library
                 </button>
             </div>
-        </nav>
+        </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Content Creation Form -->
-        <div class="bg-white neub-border p-6 mb-8">
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 py-12">
+        <!-- Hero Section -->
+        <section class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4 header-title">Craft Your Content, <span class="text-[#BDAAFF]">Elevate Your Vision</span></h1>
+            <p class="text-2xl font-bold max-w-2xl mx-auto text-[#C8C8E0]">
+                Your ultimate creative companion, designed to inspire and empower content creators at every step of their journey.
+            </p>
+        </section>
+
+        <!-- Content Creation Tools -->
+        <div class="neu-box p-6 mb-8 rounded-lg">
+            <h2 class="text-xl font-bold mb-4">Create Content</h2>
             <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <select x-model="currentTool" 
-                            class="col-span-1 p-3 border-2 border-secondary focus:outline-none focus:border-primary">
+                <div>
+                    <select x-model="currentTool" class="w-full p-3 neu-button rounded-lg">
                         <option value="ideas">Generate Ideas</option>
                         <option value="captions">Generate Captions</option>
                         <option value="images">Search Images</option>
                     </select>
-                    <div class="col-span-2 flex gap-4">
-                        <input type="text" 
-                               x-model="query" 
-                               @keyup.enter="generate"
-                               class="flex-1 p-3 border-2 border-secondary focus:outline-none focus:border-primary"
-                               :placeholder="getPlaceholder()">
-                        <button @click="generate" 
-                                class="neub-border btn-primary px-6 py-2 flex items-center justify-center min-w-[120px]"
-                                :disabled="isLoading">
-                            <span x-show="!isLoading">Generate</span>
-                            <i x-show="isLoading" class="bi bi-arrow-repeat animate-spin"></i>
-                        </button>
-                    </div>
+                </div>
+                <div class="flex gap-4">
+                    <input type="text" x-model="query" @keyup.enter="generate" class="flex-1 p-3 neu-button rounded-lg" :placeholder="getPlaceholder()">
+                    <button @click="generate" class="neu-button px-6 py-2 bg-[#6E41D9] rounded-lg" :disabled="isLoading">
+                        <span x-show="!isLoading">Generate</span>
+                        <i x-show="isLoading" class="bi bi-arrow-repeat animate-spin"></i>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <!-- Results Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Results Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" x-show="results.length > 0">
             <template x-for="(result, index) in results" :key="index">
-                <div class="bg-white neub-border p-4 h-full">
+                <div class="neu-box p-4 rounded-lg">
                     <template x-if="currentTool === 'images'">
-                        <img :src="result.url" :alt="result.alt" class="w-full h-48 object-cover mb-4 neub-border">
+                        <img :src="result.url" :alt="result.alt" class="w-full h-48 object-cover mb-4 rounded-lg">
                     </template>
                     <template x-if="currentTool !== 'images'">
-                        <p x-text="result.content" class="mb-4 text-secondary"></p>
+                        <p x-text="result.content" class="mb-4"></p>
                     </template>
-                    <div class="flex justify-end space-x-2 mt-auto">
-                        <button @click="copyToClipboard(result)" class="neub-border p-2 hover:bg-gray-50">
-                            <i class="bi bi-clipboard"></i>
-                        </button>
-                        <button @click="saveItem(result)" class="neub-border p-2 hover:bg-gray-50">
+                    <div class="flex justify-end space-x-2">
+                        <a :href="result.url" download class="neu-button p-2 rounded-lg" x-show="currentTool === 'images'">
+                            <i class="bi bi-download"></i>
+                        </a>
+                        <button @click="saveItem(result)" class="neu-button p-2 rounded-lg">
                             <i class="bi bi-bookmark-plus"></i>
                         </button>
                     </div>
                 </div>
             </template>
         </div>
+    
 
-        <!-- Library Modal -->
-        <div x-show="showLibrary" x-cloak
-             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-            <div @click.away="showLibrary = false" 
-                 class="bg-white neub-border max-w-2xl w-full mx-auto">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-secondary">My Library</h3>
-                        <button @click="showLibrary = false" class="neub-border p-2 hover:bg-gray-50">
-                            <i class="bi bi-x-lg"></i>
-                        </button>
-                    </div>
-                    <div class="custom-scrollbar max-h-[60vh] overflow-y-auto space-y-4">
-                        <template x-if="savedItems.length === 0">
-                            <p class="text-center py-8 text-gray-500">Your library is empty. Start saving items!</p>
+    <!-- Library Modal -->
+    <div x-show="showLibrary" x-cloak class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4">
+        <div class="neu-box bg-[#1C1C2C] w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 rounded-lg" @click.away="showLibrary = false">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-[#BDAAFF]">My Library</h3>
+                <button @click="showLibrary = false" class="neu-button p-2 rounded-lg">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <template x-if="savedItems.length === 0">
+                    <p class="text-center py-8 text-[#C8C8E0]">Your library is empty. Start saving items!</p>
+                </template>
+                <template x-for="(item, index) in savedItems" :key="index">
+                    <div class="neu-box p-4 rounded-lg">
+                        <template x-if="item.type === 'image'">
+                            <img :src="item.url" :alt="item.alt" class="w-full h-40 object-cover mb-2 rounded-lg">
+                            <a :href="item.url" download class="neu-button p-2 rounded-lg">
+                                <i class="bi bi-download"></i> Download
+                            </a>
                         </template>
-                        <template x-for="(item, index) in savedItems" :key="index">
-                            <div class="neub-border p-4 bg-gray-50">
-                                <template x-if="item.type === 'image'">
-                                    <img :src="item.url" :alt="item.alt" class="w-full h-40 object-cover mb-2 neub-border">
-                                </template>
-                                <template x-if="item.type !== 'image'">
-                                    <p x-text="item.content" class="text-secondary"></p>
-                                </template>
-                                <div class="flex justify-end mt-4">
-                                    <button @click="removeItem(index)" class="neub-border p-2 text-red-500 hover:bg-red-50">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
+                        <template x-if="item.type !== 'image'">
+                            <p x-text="item.content"></p>
                         </template>
+                        <div class="flex justify-end mt-2">
+                            <button @click="removeItem(index)" class="neu-button p-2 text-red-500 rounded-lg">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
+                </template>
             </div>
         </div>
-    </main>
+    </div>
+</body>
+</html>
+</main>
 
     <script>
-        function contentCrafter() {
+        function app() {
             return {
                 currentTool: 'ideas',
                 query: '',
@@ -168,100 +170,78 @@
                 savedItems: [],
                 showLibrary: false,
                 isLoading: false,
-                notification: {
-                    show: false,
-                    message: ''
-                },
+                notification: { show: false, message: '' },
 
                 init() {
                     this.savedItems = JSON.parse(localStorage.getItem('savedItems') || '[]');
                 },
 
                 getPlaceholder() {
-                    const placeholders = {
-                        'ideas': 'Enter a topic to generate content ideas...',
-                        'captions': 'Describe what you need captions for...',
-                        'images': 'Enter keywords to search images...'
-                    };
-                    return placeholders[this.currentTool] || 'Enter your query...';
+                    switch(this.currentTool) {
+                        case 'ideas': return 'Enter a topic to generate content ideas...';
+                        case 'captions': return 'Describe what you need captions for...';
+                        case 'images': return 'Enter keywords to search images...';
+                        default: return 'Enter your query...';
+                    }
                 },
 
                 async generate() {
                     if (!this.query.trim()) return;
-                    
                     this.isLoading = true;
+                    this.results = [];
                     try {
-                        const response = await fetch('https://r0c8kgwocscg8gsokogwwsw4.zetaverse.one/ai', {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': 'Bearer Wz7vsrSK8uQfJlEHYlcFvUi6R2I3',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                messages: [{
-                                    role: 'user',
-                                    content: [{ 
-                                        type: 'text',
-                                        text: `Generate 5 ${this.currentTool} for: ${this.query}`
-                                    }]
-                                }]
-                            })
-                        });
-                        
+                        let response;
+                        if (this.currentTool === 'images') {
+                            response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(this.query)}&count=6&client_id=vRFxZ8hfjmOAfWKGcCE33ooXCcWmLVAF9P0GZ5phuvI`);
+                        } else {
+                            const toolType = this.currentTool === 'ideas' ? 'Generate 5 creative content ideas' : 'Generate 5 captions';
+                            response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=AIzaSyCdFS1o2zsyiGJ65BAuqX1HBfnVf6uuMms`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    contents: [{ parts: [{ text: `${toolType} for: ${this.query}` }] }]
+                                })
+                            });
+                        }
                         const data = await response.json();
-                        this.results = data.message.split('\n')
-                            .filter(item => item.trim())
-                            .map(item => ({
-                                type: this.currentTool,
-                                content: item
-                            }));
+                        if (this.currentTool === 'images') {
+                            this.results = data.map(img => ({ url: img.urls.regular, alt: img.alt_description }));
+                        } else {
+                            const textResults = data.candidates[0].content.parts[0].text.split('\n')
+                                .filter(line => line.trim() !== '');
+                            this.results = textResults.map(text => ({ content: text }));
+                        }
                     } catch (error) {
-                        console.error('Generation error:', error);
-                        this.showNotification('Failed to generate content. Please try again.');
+                        console.error('Error:', error);
+                        this.showNotification('Failed to fetch results. Please try again!');
                     } finally {
                         this.isLoading = false;
                     }
-                },
-                async searchImages() {
-                    const response = await fetch(`https://api.unsplash.com/photos/random?query=${encodeURIComponent(this.searchQuery)}&count=9&client_id=vRFxZ8hfjmOAfWKGcCE33ooXCcWmLVAF9P0GZ5phuvI`);
-                    const data = await response.json();
-                     this.results = data.map(image => ({
-                        type: 'image',
-                        url: image.urls.regular,
-                        alt: image.alt_description,
-                        attribution: image.user.name
-                    }));
-                },
-
-
-                async copyToClipboard(item) {
-                    const text = item.type === 'image' ? item.url : item.content;
-                    try {
-                        await navigator.clipboard.writeText(text);
-                        this.showNotification('Copied to clipboard!');
-                    } catch (error) {
-                        this.showNotification('Failed to copy to clipboard');
-                    }
-                },
-
-                saveItem(item) {
-                    this.savedItems.push(item);
-                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
-                    this.showNotification('Item saved to library!');
-                },
-
-                removeItem(index) {
-                    this.savedItems.splice(index, 1);
-                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
-                    this.showNotification('Item removed from library');
                 },
 
                 showNotification(message) {
                     this.notification.message = message;
                     this.notification.show = true;
-                    setTimeout(() => {
-                        this.notification.show = false;
-                    }, 3000);
+                    setTimeout(() => this.notification.show = false, 3000);
+                },
+
+                saveItem(item) {
+                    if (item.type === 'image') {
+                        this.savedItems.push({ type: 'image', url: item.url, alt: item.alt });
+                    } else {
+                        this.savedItems.push({ type: 'text', content: item.content });
+                    }
+                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
+                    this.showNotification('Item saved successfully!');
+                },
+
+                removeItem(index) {
+                    this.savedItems.splice(index, 1);
+                    localStorage.setItem('savedItems', JSON.stringify(this.savedItems));
+                    this.showNotification('Item removed successfully!');
+                },
+                    toggleLibrary() {
+                    this.showLibrary = !this.showLibrary;
                 }
             }
         }
